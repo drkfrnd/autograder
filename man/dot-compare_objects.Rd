@@ -4,7 +4,7 @@
 \alias{.compare_objects}
 \title{Compare homework answers to an answer key}
 \usage{
-.compare_objects(hw, key)
+.compare_objects(hw, key, funs = NULL)
 }
 \arguments{
 \item{hw}{named list containing the objects created in the homework script.

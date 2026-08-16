@@ -1,4 +1,28 @@
 
+
+
+check_object <- function(hw, key, nm, compare_fun, ...) {
+  obj_error <- NA
+  if (!(nm %in% names(hw))) {
+    obj_status <- "missing"
+  } else {
+    try_compare <- try(compare_fun(hw[[nm]], key[[nm]], ...))
+    # try_compare <- try(testthat::expect_equal(hw[[nm]], key[[nm]], label = nm, expected.label = paste0(nm, " (key)")))
+
+    is_error <- inherits(try_compare, "try-error")
+    obj_status <- if(is_error) "incorrect" else "correct"
+    obj_error <- if(is_error) as.character(try_compare) else NA
+  }
+  return(list(
+    obj_status = obj_status,
+    error = obj_error
+  ))
+}
+
+# grade_item <- function(item, pts = 1) {
+#
+# }
+
 #' @title Compare homework answers to an answer key
 #' @description Given a list representing homework answers and a list containing
 #'   the correct answers, compares the correct answers to the homework answers
@@ -15,22 +39,23 @@
 #'     (object is not present in `hw`)
 #'   * `error`: If the answer was incorrect, contains the output from the
 #'     comparison
-.compare_objects <- function(hw, key) {
+.compare_objects <- function(hw, key, funs = NULL) {
   eval_list <- lapply(names(key), function(nm_i) {
-    obj_error <- NA
-    if (!(nm_i %in% names(hw))) {
-      obj_status <- "missing"
-    } else {
-      try_compare <- try(testthat::expect_equal(hw[[nm_i]], key[[nm_i]], label = nm_i, expected.label = paste0(nm_i, " (key)")))
-
-      is_error <- inherits(try_compare, "try-error")
-      obj_status <- if(is_error) "incorrect" else "correct"
-      obj_error <- if(is_error) as.character(try_compare) else NA
-    }
-    return(list(
-      obj_status = obj_status,
-      error = obj_error
-    ))
+    check_object(hw, key, nm_i, testthat::expect_equal, label = nm_i, expected.label = paste0(nm_i, " (key)"))
+    # obj_error <- NA
+    # if (!(nm_i %in% names(hw))) {
+    #   obj_status <- "missing"
+    # } else {
+    #   try_compare <- try(testthat::expect_equal(hw[[nm_i]], key[[nm_i]], label = nm_i, expected.label = paste0(nm_i, " (key)")))
+    #
+    #   is_error <- inherits(try_compare, "try-error")
+    #   obj_status <- if(is_error) "incorrect" else "correct"
+    #   obj_error <- if(is_error) as.character(try_compare) else NA
+    # }
+    # return(list(
+    #   obj_status = obj_status,
+    #   error = obj_error
+    # ))
   })
   names(eval_list) <- names(key)
 
