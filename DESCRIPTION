@@ -1,0 +1,22 @@
+Package: autograder
+Type: Package
+Title: Compares the output of R scripts to an answer key
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Jane", "Doe",
+      email = "jane@example.com",
+      role = c("aut", "cre")
+    )
+  )
+Imports: 
+  testthat,
+  rmarkdown,
+  rvest,
+  xml2
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
