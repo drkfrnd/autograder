@@ -65,82 +65,19 @@
   } else {
     source_error <- NA
     hw <- as.list(hw_env)
-    df <- .compare_objects(hw, key)
+    df <- .check_items(hw, key)
   }
 
-  df <- df[order(df$name), ]
+  # df <- df[order(df$name), ]
   return(
     list(
       result = df,
       source_error = source_error,
-      answers = hw[intersect(names(hw), names(key))],
+      # answers = hw[intersect(names(hw), names(key))],
+      answers = hw,
       key = key
     )
   )
-}
-
-#' @title Prints the returned value of `.check_answers`
-#' @param result output from `.check_answers`
-#' @returns Returns a character vector of length one containing the printed
-#'   results.
-.print_results <- function(result) {
-  message <- ""
-  append <- function(...) {
-    message <<- paste0(message, ...)
-  }
-  if (!is.na(result$source_error)) {
-    append(paste0(
-      "The R script failed to run with the following error:\n\n",
-      result$source_error, "\n\n",
-      "If the code is working fine when you run it, check the following:\n\n",
-      "- Try clearing all objects from your workspace and re-running the code. ",
-      "It's possible that you're referencing a variable that isn't ",
-      "created in the code. (This often happens if you rename a variable and forget ",
-      "to change the name at every instance where the variable is used.) Clearing the workspace ",
-      "and re-running the code will expose this error.\n ",
-      "- Try terminating the session (from the top menu, select Session > Terminate R). It's possible ",
-      "that you're using a function from a package but aren't loading the package ",
-      "in the code (e.g. library(mypackage)).\n\n",
-      "These errors can arise because this function runs your code in a new R session ",
-      "with an empty workspace and no packages loaded.",
-      sep = ""
-    ))
-  } else {
-    header <- function(title) {
-      hr <- "==============================\n"
-      char_dif <-  (nchar(hr) - 1) - nchar(title)
-      padding <- ""
-      if (char_dif > 1) {
-        padding <- paste0(rep(" ", floor(char_dif / 2)), collapse = "")
-      }
-      paste0(hr, padding, title, "\n", hr)
-    }
-
-    append(header("Summary:"))
-
-    n_correct <- sum(result$result$result == "correct")
-    n_total <- nrow(result$result)
-    append(n_correct, "/", n_total, " correct\n")
-    append("\n", header("Results:"))
-
-    result2 <- result$result[order(result$result$name), c("name", "result")]
-    names(result2) <- c("OBJECT", "RESULT")
-    result2_str <- capture.output(print(result2, row.names = FALSE, right = FALSE))
-    append(paste0(result2_str, collapse = "\n"), "\n")
-
-    if (any(!is.na(result$result$error))) {
-      append("\n", header("Incorrect answers:"))
-      errors <- result$result[!is.na(result$result$error), ]
-      for (name_i in errors$name) {
-
-        line <- paste0(rep("-", nchar(name_i) + 4,), collapse = "")
-        append(line, "\n  ", name_i, "  \n", line,"\n", errors$error[errors$name == name_i])
-        append("\nYour answer was:\n", .shorten_output(result$answers[[name_i]], 1000), "\n\n")
-        append("The correct answer is:\n", .shorten_output(result$key[[name_i]], 1000), "\n")
-      }
-    }
-  }
-  return(message)
 }
 
 
