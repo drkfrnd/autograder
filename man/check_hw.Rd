@@ -4,7 +4,7 @@
 \alias{check_hw}
 \title{Check homework answers}
 \usage{
-check_hw(path, key = NULL, verbose = TRUE)
+check_hw(path, key = NULL, verbose = TRUE, out_dir = NULL)
 }
 \arguments{
 \item{path}{character of length 1; path to an R script to check.}
@@ -14,6 +14,9 @@ list. See details for more.}
 
 \item{verbose}{logical of length 1; if `TRUE`, prints the result of checking
 the homework assignment to the console.}
+
+\item{out_dir}{character of length 1; path to directory in which to output
+the HTML files}
 }
 \value{
 invisibly returns the returned value from `.check_answers`

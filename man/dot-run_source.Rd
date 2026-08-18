@@ -4,13 +4,15 @@
 \alias{.run_source}
 \title{Run a script and store the created objects}
 \usage{
-.run_source(path, env)
+.run_source(path, env, ...)
 }
 \arguments{
 \item{path}{character of length 1; path to the R script (or .Rmd)}
 
 \item{env}{environment; the objects created by the script will be saved in
 this environment}
+
+\item{...}{ignored}
 }
 \value{
 If `source()` runs successfully, returns the output of `source()`.

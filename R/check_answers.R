@@ -4,10 +4,11 @@
 #' @param path character of length 1; path to the R script (or .Rmd)
 #' @param env environment; the objects created by the script will be saved in
 #'   this environment
+#' @param ... ignored
 #' @returns If `source()` runs successfully, returns the output of `source()`.
 #'   Otherwise returns a `try-error`.
 #' @export
-.run_source <- function(path, env) {
+.run_source <- function(path, env, ...) {
   print(tools::file_ext(path))
   if (tools::file_ext(path) == "Rmd") {
     tf <- tempfile(fileext = ".R")
@@ -25,8 +26,9 @@
 #'   this environment
 #' @param out_dir character of length(1); path to the directory in which to save
 #'   the rendered file.
+#' @param ... ignored
 #' @export
-.run_render <- function(path, env, out_dir) {
+.run_render <- function(path, env, out_dir, ...) {
   try({
     rmarkdown::render(path, envir = env, output_dir = out_dir)
     # output_format = rmarkdown::html_document(
@@ -98,7 +100,7 @@
 #' @returns invisibly returns the returned value from `.check_answers`
 #' @inheritParams render_all
 #' @export
-check_hw <- function(path, key = NULL, verbose = TRUE) {
+check_hw <- function(path, key = NULL, verbose = TRUE, out_dir = NULL) {
   if (!file.exists(path)) {
     stop(paste0("File \"", path, "\" not found in the current working directory (", getwd(), ").\n",
                 "- Check that the file name is spelled correctly.\n",
@@ -107,10 +109,23 @@ check_hw <- function(path, key = NULL, verbose = TRUE) {
 
   key <- .process_key(key, path)
 
-  result <- callr::r(.check_answers, args = list(path = path, key = key), package = "autograder")
+  run_fun <- if(!is.null(out_dir)) .run_render else .run_source
+  result <- callr::r(.check_answers,
+                     args = list(path = path,
+                                 key = key,
+                                 source_fun = run_fun,
+                                 out_dir = out_dir),
+                     package = "autograder")
 
   if (verbose) {
     cat(.print_results(result))
+  }
+
+  if (!is.null(out_dir)) {
+    html <- file.path(out_dir, paste0(tools::file_path_sans_ext(basename(path)), ".html"))
+    if (file.exists(html)) {
+      .insert_results_into_html(result, html)
+    }
   }
 
   invisible(result)
