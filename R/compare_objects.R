@@ -11,6 +11,8 @@
 #   })
 # }
 
+
+
 #' @param hw list containing ALL objects created in the assignment
 #' @param key list containing the relevant objects
 grade_equal <- function(hw, key) {
@@ -21,7 +23,13 @@ grade_equal <- function(hw, key) {
          call. = FALSE)
   }
   lapply(names(key), function(nm_i) {
-    testthat::expect_equal(hw[[nm_i]], key[[nm_i]], label = nm_i, expected.label = paste0(nm_i, " (key)"))
+    test <- try(testthat::expect_equal(hw[[nm_i]], key[[nm_i]], label = nm_i, expected.label = paste0(nm_i, " (key)")))
+    if (inherits(test, "try-error")) {
+      stop(paste0(
+        as.character(test),
+        .print_mismatch(hw[[nm_i]], key[[nm_i]])
+      ))
+    }
   })
 }
 

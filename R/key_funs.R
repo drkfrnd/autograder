@@ -23,7 +23,7 @@ key_fun <- function() {
     if (missing(name)) return(key)
     if (name %in% names(key)) key[[name]] <<- NULL
     key <<- c(key, setNames(list(autograder::item(...)), name))
-    return(key)
+    invisible(key)
   }
   return(add_to_key)
 }
@@ -50,21 +50,7 @@ load_key <- function(path) {
   readRDS(path)
 }
 
-#' @title Shortens the printed version of an object
-#' @description Given an object and a number of characters, captures the output
-#'   from printing the object and then shortens it to the desired number of
-#'   characters (if necessary).
-#' @param x object to print
-#' @param n integer; maximum number of characters
-#' @returns character vector of length 1 with the shortened output.
-.shorten_output <- function(x, n) {
-  out <- capture.output(print(x))
-  str <- paste0(out, collapse = "\n")
-  if (nchar(str) > n) {
-    str <- paste0(substr(str, 1, n), "\n...\nOutput truncated to ", n, " characters.")
-  }
-  return(str)
-}
+
 
 
 #' @title Read a homework key from the GitHub repository.
