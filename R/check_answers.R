@@ -61,7 +61,13 @@
   if (inherits(source_error, "try-error")) {
     source_error <- paste0(" ", as.character(source_error))
     hw <- NULL
-    df <- data.frame(name = names(key), result <- "failed to run", error = NA)
+    df <- data.frame(
+      result = "incorrect",
+      error = "script failed to run",
+      pts = 0,
+      pts_pos = sapply(key, `[[`, "pts"),
+      name = names(key)
+    )
   } else {
     source_error <- NA
     hw <- as.list(hw_env)

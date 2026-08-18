@@ -12,6 +12,8 @@ list2 <- function(...) {
   return(items)
 }
 
+#' @title Create a grading item
+#' @description Creates an grading item. The item stores any data passed to
 #' @export
 item <- function(..., compare_fun = grade_equal, pts = 1) {
   list(

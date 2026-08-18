@@ -1,3 +1,33 @@
+#' @title Get a function for appending to a key
+#' @description This function is intended to be used when creating a key. This
+#' function returns a function, and you can then use that function to add to the
+#' key. The goal is to minimize typing and make it quick and easy to add items
+#' to a key.
+#' @returns Returns a function with the following function signature:
+#' `function(name, ...)`. The parameters are:
+#' * `name`: character of length 1; name to assign to this item. If this parameter
+#'   is missing no item is added and the key is returned.
+#' * `...`: arguments passed to `item()`.
+#' @examples
+#' k <- key_fun()
+#' x <- 1
+#' k("q1", x, pts = 1)
+#' y <- "hello"
+#' k("q2", y, pts = 1.5)
+#' k() # return the key
+#' # saveRDS(k(), "mykey.rds")
+#' @export
+key_fun <- function() {
+  key <- list()
+  add_to_key <- function(name, ...) {
+    if (missing(name)) return(key)
+    if (name %in% names(key)) key[[name]] <<- NULL
+    key <<- c(key, setNames(list(autograder::item(...)), name))
+    return(key)
+  }
+  return(add_to_key)
+}
+
 
 #' @title Load a .RData file as a list
 #' @description Given a .RData file, loads the objects it contains into a list.
@@ -16,7 +46,8 @@
 #' @returns list containing the R objects
 #' @export
 load_key <- function(path) {
-  .load_list(path)
+  # key <- .load_list(path)[[1]] # assumes that the key is the only
+  readRDS(path)
 }
 
 #' @title Shortens the printed version of an object
@@ -44,20 +75,22 @@ load_key <- function(path) {
 #' @returns Returns the key as a named list.
 #' @export
 get_key <- function(name) {
-  if (!grepl("[.]rdata$", tolower(name))) name <- paste0(name, ".RData")
+  if (!grepl("[.]rds$", tolower(name))) name <- paste0(name, ".rds")
 
   url <- paste0(
-    "https://github.com/drkfrnd/STAT212/raw/refs/heads/master/rdata/",
+    "https://github.com/drkfrnd/STAT212/raw/refs/heads/master/rds/",
     name
   )
-  tf <- tempfile(fileext = ".RData")
+  tf <- tempfile(fileext = ".rds")
   result <- try(download.file(url, tf), silent = TRUE)
   if (inherits(result, "try-error")) {
     stop(paste0("Download was unsuccessful. Did you enter the correct name?\n",
                 "URL: ", url))
   }
-  lst <- .load_list(tf)
-  return(lst)
+  # lst <- .load_list(tf)
+
+  # return(lst)
+  return(load_key(tf))
 }
 
 #' @title Guess the homework name from a file path
@@ -71,7 +104,8 @@ get_key <- function(name) {
   re <- regexpr(pattern, path_lower)
 
   if (re == -1) {
-    return(NA)
+    # return(NA)
+    return(basename(tools::file_path_sans_ext(path)))
   } else {
     return(regmatches(path_lower, re))
   }

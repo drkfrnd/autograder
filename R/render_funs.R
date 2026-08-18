@@ -107,7 +107,7 @@ render_all <- function(in_dir, out_dir, key = NULL, summary_csv = TRUE,
 #' @export
 render_no_code <- function(path, output_file = NULL) {
   on.exit({
-    opts_hooks$set(eval = function(options) { options })
+    knitr::opts_hooks$set(eval = function(options) { options })
   })
   knitr::opts_hooks$set(eval = function(options) {
     options$eval <- FALSE

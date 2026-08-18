@@ -4,7 +4,7 @@
 \alias{.print_results}
 \title{Prints the returned value of `.check_answers`}
 \usage{
-.print_results(result)
+.print_results(result, width = 30)
 }
 \arguments{
 \item{result}{output from `.check_answers`}
