@@ -1,6 +1,6 @@
 # @param df output of check_hw()
 #' @export
-gradescope_json <- function(df, ...) {
+gradescope_list <- function(df, ...) {
   df$result <- c(correct = "passed", incorrect = "failed")[df$result]
   names_dict <- c(
     pts = "score",
@@ -17,5 +17,5 @@ gradescope_json <- function(df, ...) {
     ...,
     tests = df
   )
-  return(jsonlite::toJSON(lst))
+  return(lst)
 }
