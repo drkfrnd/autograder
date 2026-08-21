@@ -11,24 +11,41 @@
 #   })
 # }
 
+# eval_simple_formula <- function(formula, envir = parent.frame()) {
+#   if (length(formula) == 3) {
+#     stop("This function only works with formulas that only have a right side.")
+#   }
+#   rhs <- formula[[2]]
+#   eval(rhs, envir = envir)
+# }
+#
+# grade_function <- function(hw, key, inputs = list()) {
+#
+# }
 
-
-#' @param hw list containing ALL objects created in the assignment
-#' @param key list containing the relevant objects
-grade_equal <- function(hw, key) {
+#' @export
+grade_exists <- function(hw, key) {
   is_in_hw <- names(key) %in% names(hw)
   if (!all(is_in_hw)) {
     stop(paste0("The following object(s) were not created in the homework script: \n",
                 paste0("* ", names(key)[!is_in_hw], collapse = "\n ")),
          call. = FALSE)
   }
+}
+
+#' @param hw list containing ALL objects created in the assignment
+#' @param key list containing the relevant objects
+#' @export
+grade_equal <- function(hw, key) {
+  grade_exists(hw, key)
   lapply(names(key), function(nm_i) {
     test <- try(testthat::expect_equal(hw[[nm_i]], key[[nm_i]], label = nm_i, expected.label = paste0(nm_i, " (key)")))
     if (inherits(test, "try-error")) {
+      error_message <- gsub("Error : ", "", as.character(test), fixed = TRUE)
       stop(paste0(
-        as.character(test),
+        error_message,
         .print_mismatch(hw[[nm_i]], key[[nm_i]])
-      ))
+      ), call. = FALSE)
     }
   })
 }

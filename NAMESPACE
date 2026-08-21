@@ -2,8 +2,11 @@
 
 export(.run_render)
 export(.run_source)
+export(Keymaker)
 export(check_hw)
 export(get_key)
+export(grade_equal)
+export(grade_exists)
 export(gradescope_list)
 export(item)
 export(key_fun)
