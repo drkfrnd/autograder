@@ -12,7 +12,7 @@ gradescope_list <- function(df, ...) {
   names(df)[match(names(names_dict), names(df))] <- names_dict
   rownames(df) <- NULL
   lst <- list(
-    visibility = "after_due_date",
+    visibility = "visible",
     stdout_visibility = "visible",
     ...,
     tests = df

@@ -4,7 +4,7 @@
 \alias{check_hw}
 \title{Check homework answers}
 \usage{
-check_hw(path, key = NULL, verbose = TRUE, out_dir = NULL)
+check_hw(path = NULL, key = NULL, verbose = TRUE, out_dir = NULL)
 }
 \arguments{
 \item{path}{character of length 1; path to an R script to check.}

@@ -16,10 +16,13 @@ list2 <- function(...) {
 #' @description Creates an grading item. The item stores any data passed to
 #' @export
 item <- function(..., compare_fun = grade_equal, pts = 1) {
-  list(
-    objects = list2(...),
-    compare_fun = compare_fun,
-    pts = pts
+  structure(
+    list(
+      objects = list2(...),
+      compare_fun = compare_fun,
+      pts = pts
+    ),
+    class="grade_item"
   )
 }
 

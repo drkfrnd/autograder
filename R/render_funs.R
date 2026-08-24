@@ -105,7 +105,7 @@ render_all <- function(in_dir, out_dir, key = NULL, summary_csv = TRUE,
 #' @param path character of length 1; path to the R or Rmd file
 #' @param output_file character of length 1; path to the output file
 #' @export
-render_no_code <- function(path, output_file = NULL) {
+render_no_code <- function(path, output_format = "all", ...) {
   on.exit({
     knitr::opts_hooks$set(eval = function(options) { options })
   })
@@ -115,5 +115,5 @@ render_no_code <- function(path, output_file = NULL) {
     options
   })
 
-  rmarkdown::render(path, output_file = NULL)
+  rmarkdown::render(path, output_format = output_format, ...)
 }

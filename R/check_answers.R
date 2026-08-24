@@ -56,24 +56,34 @@
 #' * `answers`: list containing the objects created from running the homework
 #'   script. Only contains the objects whose name appears in `key`.
 #' * `key`: the passed to the `key` parameter
-.check_answers <- function(path, key, source_fun = .run_source, ...) {
-  hw_env <- new.env()
-  source_error <- source_fun(path, hw_env, ...)
-
+.source_and_check_items <- function(path, key_items, key_objects, source_fun = .run_source, ...) {
+  if (missing(path) || is.null(path)) {
+    hw_env <- parent.frame()
+    source_error <- NULL
+  } else {
+    hw_env <- new.env()
+    source_error <- source_fun(path, hw_env, ...)
+  }
   if (inherits(source_error, "try-error")) {
     source_error <- paste0(" ", as.character(source_error))
-    hw <- NULL
+    hw_objects <- NULL
     df <- data.frame(
+      id = sapply(key_items, `[[`, "id"),
       result = "incorrect",
       error = "script failed to run",
       pts = 0,
-      pts_pos = sapply(key, `[[`, "pts"),
-      name = names(key)
+      pts_pos = sapply(key_items, `[[`, "pts"),
+      name = names(key_items),
+      object_names = NA_character_
     )
   } else {
     source_error <- NA
-    hw <- as.list(hw_env)
-    df <- .check_items(hw, key)
+    hw_objects <- as.list(hw_env)
+    df <- .check_items(
+      key_items = key_items,
+      key_objects = key_objects,
+      hw_objects = hw_objects
+    )
   }
 
   # df <- df[order(df$name), ]
@@ -82,8 +92,9 @@
       result = df,
       source_error = source_error,
       # answers = hw[intersect(names(hw), names(key))],
-      answers = hw,
-      key = key
+      hw_objects = hw_objects,
+      key_items = key_items,
+      key_objects = key_objects
     )
   )
 }
@@ -100,25 +111,30 @@
 #' @returns invisibly returns the returned value from `.check_answers`
 #' @inheritParams render_all
 #' @export
-check_hw <- function(path, key = NULL, verbose = TRUE, out_dir = NULL) {
-  if (!file.exists(path)) {
-    stop(paste0("File \"", path, "\" not found in the current working directory (", getwd(), ").\n",
-                "- Check that the file name is spelled correctly.\n",
-                "- Also ensure that your working directory is set to the directory that contains the R script.\n"))
+check_hw <- function(path = NULL, key = NULL, verbose = TRUE, out_dir = NULL) {
+  if (!is.null(path)) {
+    if (!file.exists(path)) {
+      stop(paste0("File \"", path, "\" not found in the current working directory (", getwd(), ").\n",
+                  "- Check that the file name is spelled correctly.\n",
+                  "- Also ensure that your working directory is set to the directory that contains the R script.\n"))
+    }
+
+    key <- .process_key(key, path)
+  } else if (is.null(key)) {
+    stop("If 'path' is NULL then 'key' must be provided")
   }
 
-  key <- .process_key(key, path)
-
   run_fun <- if(!is.null(out_dir)) .run_render else .run_source
-  result <- callr::r(.check_answers,
+  result <- callr::r(.source_and_check_items,
                      args = list(path = path,
-                                 key = key,
+                                 key_items = key$items,
+                                 key_objects = key$objects,
                                  source_fun = run_fun,
                                  out_dir = out_dir),
                      package = "autograder")
 
   if (verbose) {
-    cat(.print_results(result))
+    cat(.print_source_and_check(result))
   }
 
   if (!is.null(out_dir)) {

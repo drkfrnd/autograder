@@ -47,11 +47,45 @@
 }
 
 
+.print_check <- function(df, width = 30) {
+  message <- ""
+  append <- function(...) {
+    message <<- paste0(message, ...)
+  }
+  # df$score <- paste0(df$pts, " / ", df$pts_pos)
+  n_correct <- sum(df$result == "correct")
+  # score <- sum(df$pts)
+  # score_pos <- sum(df$pts_pos)
+  # n_total <- nrow(df)
+  summary <- paste0(sum(df$pts), " / ", sum(df$pts_pos), "\n")
+  append(.center(summary, width = width))
+  append("\n", .header1("Results:", width = width))
+  # browser()
+  df2 <- df[order(df$name), c("name", "result", "pts", "pts_pos")]
+  names(df2) <- c("NAME", "RESULT", "SCORE", "OUT_OF")
+  df2_str <- capture.output(print(df2, row.names = FALSE, right = FALSE))
+  append(paste0(df2_str, collapse = "\n"), "\n")
+
+  if (any(!is.na(df$error))) {
+    append("\n", .header1("Incorrect answers:", width = width))
+    errors <- df[!is.na(df$error), ]
+    for (name_i in errors$name) {
+
+      line <- paste0(rep("-", nchar(name_i) + 4,), collapse = "")
+      append(.header2(name_i), errors$error[errors$name == name_i])
+      # append(line, "\n  ", name_i, "  \n", line,"\n", )
+      # append("\nYour answer was:\n", .shorten_output(result$answers[[name_i]], 1000), "\n\n")
+      # append("The correct answer is:\n", .shorten_output(result$key[[name_i]], 1000), "\n")
+    }
+  }
+  return(message)
+}
+
 #' @title Prints the returned value of `.check_answers`
 #' @param result output from `.check_answers`
 #' @returns Returns a character vector of length one containing the printed
 #'   results.
-.print_results <- function(result, width = 30) {
+.print_source_and_check <- function(result, width = 30) {
   message <- ""
   append <- function(...) {
     message <<- paste0(message, ...)
@@ -75,33 +109,7 @@
     ))
   } else {
     append(.header1("Score:", width = width))
-    df <- result$result
-    # df$score <- paste0(df$pts, " / ", df$pts_pos)
-    n_correct <- sum(df$result == "correct")
-    # score <- sum(df$pts)
-    # score_pos <- sum(df$pts_pos)
-    # n_total <- nrow(df)
-    summary <- paste0(sum(df$pts), " / ", sum(df$pts_pos), "\n")
-    append(.center(summary, width = width))
-    append("\n", .header1("Results:", width = width))
-    # browser()
-    df2 <- df[order(df$name), c("name", "result", "pts", "pts_pos")]
-    names(df2) <- c("NAME", "RESULT", "SCORE", "OUT_OF")
-    df2_str <- capture.output(print(df2, row.names = FALSE, right = FALSE))
-    append(paste0(df2_str, collapse = "\n"), "\n")
-
-    if (any(!is.na(df$error))) {
-      append("\n", .header1("Incorrect answers:", width = width))
-      errors <- df[!is.na(df$error), ]
-      for (name_i in errors$name) {
-
-        line <- paste0(rep("-", nchar(name_i) + 4,), collapse = "")
-        append(.header2(name_i), errors$error[errors$name == name_i])
-        # append(line, "\n  ", name_i, "  \n", line,"\n", )
-        # append("\nYour answer was:\n", .shorten_output(result$answers[[name_i]], 1000), "\n\n")
-        # append("The correct answer is:\n", .shorten_output(result$key[[name_i]], 1000), "\n")
-      }
-    }
+    append(.print_check(result$result))
   }
   return(message)
 }

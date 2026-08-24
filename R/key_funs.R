@@ -62,9 +62,9 @@ load_key <- function(path) {
 #' @export
 get_key <- function(name) {
   if (!grepl("[.]rds$", tolower(name))) name <- paste0(name, ".rds")
-
   url <- paste0(
-    "https://github.com/drkfrnd/STAT212/raw/refs/heads/master/rds/",
+    # "https://github.com/drkfrnd/STAT212/raw/refs/heads/master/rds/",
+    "https://github.com/STAT212Friend/hw_rds/raw/refs/heads/master/",
     name
   )
   tf <- tempfile(fileext = ".rds")

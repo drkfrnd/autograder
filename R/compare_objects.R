@@ -11,43 +11,90 @@
 #   })
 # }
 
-# eval_simple_formula <- function(formula, envir = parent.frame()) {
-#   if (length(formula) == 3) {
-#     stop("This function only works with formulas that only have a right side.")
-#   }
-#   rhs <- formula[[2]]
-#   eval(rhs, envir = envir)
-# }
-#
-# grade_function <- function(hw, key, inputs = list()) {
-#
-# }
+# wrapper around expect_equal that prints out a more descriptive error message
+.expect_equal2 <- function(actual, expected, ...) {
+  test <- try(testthat::expect_equal(actual, expected, ...))
+  if (inherits(test, "try-error")) {
+    error_message <- gsub("Error : ", "", as.character(test), fixed = TRUE)
+    stop(paste0(
+      error_message,
+      .print_mismatch(actual, expected)
+    ), call. = FALSE)
+  }
+}
+
+eval_simple_formula <- function(formula, envir = parent.frame()) {
+  if (length(formula) == 3) {
+    stop("This function only works with formulas that only have a right side.")
+  }
+  rhs <- formula[[2]]
+  eval(rhs, envir = envir)
+}
 
 #' @export
-grade_exists <- function(hw, key) {
-  is_in_hw <- names(key) %in% names(hw)
+grade_function <- function(hw, key, object_names, args = list()) {
+  # args <- as.list(...)
+  if (length(object_names) > 1) {
+    stop("Only one function can be graded at a time.")
+  }
+  autograder::grade_exists(hw, key, object_names)
+
+  lapply(args, function(args_i) {
+    is_formula <- sapply(args_i, inherits, "formula")
+    if (any(is_formula)) {
+      args_i[is_formula] <- lapply(args_i[is_formula], eval_simple_formula, envir = key)
+    }
+    fx_str <- paste0(object_names, "(", paste0(args_i, collapse = ", "), ")")
+    hw_result <- do.call(hw[[object_names]], args_i)
+    key_result <- do.call(key[[object_names]], args_i)
+    # testthat::expect_equal(,
+    .expect_equal2(
+      hw_result,
+      key_result,
+      label = fx_str,
+      expected.label = paste0(fx_str, " (key)")
+    )
+  })
+  invisible(NULL)
+}
+
+#' @export
+grade_exists <- function(hw, key, object_names) {
+  # browser()
+  is_in_hw <- object_names %in% names(hw)
   if (!all(is_in_hw)) {
     stop(paste0("The following object(s) were not created in the homework script: \n",
-                paste0("* ", names(key)[!is_in_hw], collapse = "\n ")),
+                paste0("* ", object_names[!is_in_hw], collapse = "\n ")),
          call. = FALSE)
   }
+  invisible(NULL)
 }
 
 #' @param hw list containing ALL objects created in the assignment
 #' @param key list containing the relevant objects
 #' @export
-grade_equal <- function(hw, key) {
-  grade_exists(hw, key)
-  lapply(names(key), function(nm_i) {
-    test <- try(testthat::expect_equal(hw[[nm_i]], key[[nm_i]], label = nm_i, expected.label = paste0(nm_i, " (key)")))
-    if (inherits(test, "try-error")) {
-      error_message <- gsub("Error : ", "", as.character(test), fixed = TRUE)
-      stop(paste0(
-        error_message,
-        .print_mismatch(hw[[nm_i]], key[[nm_i]])
-      ), call. = FALSE)
-    }
+grade_equal <- function(hw, key, object_names) {
+  print("testing")
+  autograder::grade_exists(hw, key, object_names)
+
+  lapply(object_names, function(nm_i) {
+    .expect_equal2(
+      hw[[nm_i]],
+      key[[nm_i]],
+      label = nm_i,
+      expected.label = paste0(nm_i, " (key)")
+    )
+
+    # test <- try(testthat::expect_equal(hw[[nm_i]], key[[nm_i]], label = nm_i, expected.label = paste0(nm_i, " (key)")))
+    # if (inherits(test, "try-error")) {
+    #   error_message <- gsub("Error : ", "", as.character(test), fixed = TRUE)
+    #   stop(paste0(
+    #     error_message,
+    #     .print_mismatch(hw[[nm_i]], key[[nm_i]])
+    #   ), call. = FALSE)
+    # }
   })
+  invisible(NULL)
 }
 
 # .check_object <- function(hw, key, compare_fun, ...) {
@@ -70,17 +117,28 @@ grade_equal <- function(hw, key) {
 # }
 
 # .check_item <- function(hw, key, compare_fun, ...) {
-.check_item <- function(hw, item) {
+.check_item <- function(key_item, key_objects, hw_objects) {
   # try_compare <- try(compare_fun(hw[[nm]], key[[nm]], ...))
   # try_compare <- try(compare_fun(hw, key, ...), silent = TRUE)
-  try_compare <- try(item$compare_fun(hw, item$objects), silent = TRUE)
+  try_compare <- try({
+    do.call(
+      key_item$compare_fun,
+      c(
+        list(hw_objects, key_objects, key_item$object_names),
+        key_item$compare_fun_args
+      )
+    )
+    # key_item$compare_fun(hw_objects, key_objects, key_item$object_names), silent = TRUE
+  }, silent = TRUE)
   # try_compare <- try(testthat::expect_equal(hw[[nm]], key[[nm]], label = nm, expected.label = paste0(nm, " (key)")))
   is_error <- inherits(try_compare, "try-error")
   return(data.frame(
+    id = key_item$id,
     result = if(is_error) "incorrect" else "correct",
     error = if(is_error) as.character(try_compare) else NA,
-    pts = if(is_error) 0 else item$pts,
-    pts_pos = item$pts
+    pts = if(is_error) 0 else key_item$pts,
+    pts_pos = key_item$pts,
+    objects = paste0(key_item$object_names, collapse = ";")
   ))
 }
 
@@ -133,7 +191,7 @@ grade_equal <- function(hw, key) {
 # }
 
 
-.check_items <- function(hw, items) {
+.check_items <- function(key_items, key_objects, hw_objects) {
 
   # eval_list <- lapply(names(items), function(nm_i) {
     # nm_i <- names(key)[1]
@@ -157,9 +215,9 @@ grade_equal <- function(hw, key) {
     #   error = obj_error
     # ))
   # })
-  eval_list <- lapply(items, \(item_i) .check_item(hw, item_i))
+  eval_list <- lapply(key_items, \(item_i) .check_item(item_i, key_objects, hw_objects))
   eval_df <- do.call(rbind, eval_list)
-  eval_df$name <- names(items)
+  eval_df$name <- names(key_items)
   return(eval_df)
   # names(eval_list) <- names(items)
 #

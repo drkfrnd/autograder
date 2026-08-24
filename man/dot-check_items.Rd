@@ -4,7 +4,7 @@
 \alias{.check_items}
 \title{Compare homework answers to an answer key}
 \usage{
-.check_items(hw, items)
+.check_items(key_items, key_objects, hw_objects)
 }
 \arguments{
 \item{hw}{named list containing the objects created in the homework script.
