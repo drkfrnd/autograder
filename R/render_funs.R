@@ -9,7 +9,7 @@
 #' @param path character of length 1; path to the HTML file to insert the
 #'   results summary into.
 .insert_results_into_html <- function(result, path) {
-  message <- .print_results(result)
+  message <- .print_source_and_check(result)
   html_doc <- rvest::read_html(path)
   html_doc |>
     xml2::xml_find_first('//div[@id="header"]') |>
@@ -19,30 +19,30 @@
   xml2::write_xml(html_doc, path)
 }
 
-#' @title Render homework to an HTML file
-#' @description Renders a homework script to an HTML file. The resulting HTML
-#'   file includes output at the top that summarizes the result of comparing the
-#'   homework answers to the key
-#' @param path character of length 1; path to the homework script
-#' @param key named list containing the objects that represent the correct
-#'   answers.
-#' @param out_dir character of the length 1; path to the directory in which to
-#'   save the resulting HTML. If `NULL` outputs to the current working
-#'   directory.
-#' @export
-render_hw <- function(path, key, out_dir = NULL) {
-  result <- callr::r(.check_answers,
-                     args = list(path = path,
-                                 key = key,
-                                 source_fun = .run_render,
-                                 out_dir = out_dir),
-                     package = "autograder")
-  html <- file.path(out_dir, paste0(tools::file_path_sans_ext(basename(path)), ".html"))
-  if (file.exists(html)) {
-    .insert_results_into_html(result, html)
-  }
-  return(result)
-}
+# @title Render homework to an HTML file
+# @description Renders a homework script to an HTML file. The resulting HTML
+#   file includes output at the top that summarizes the result of comparing the
+#   homework answers to the key
+# @param path character of length 1; path to the homework script
+# @param key named list containing the objects that represent the correct
+#   answers.
+# @param out_dir character of the length 1; path to the directory in which to
+#   save the resulting HTML. If `NULL` outputs to the current working
+#   directory.
+# @export
+# render_hw <- function(path, key, out_dir = NULL) {
+#   result <- callr::r(.check_answers,
+#                      args = list(path = path,
+#                                  key = key,
+#                                  source_fun = .run_render,
+#                                  out_dir = out_dir),
+#                      package = "autograder")
+#   html <- file.path(out_dir, paste0(tools::file_path_sans_ext(basename(path)), ".html"))
+#   if (file.exists(html)) {
+#     .insert_results_into_html(result, html)
+#   }
+#   return(result)
+# }
 
 #' @title Renders multiple homework assignments
 #' @description Runs all R or Rmd files in a directory and creates an HTML file
@@ -76,7 +76,7 @@ render_all <- function(in_dir, out_dir, key = NULL, summary_csv = TRUE,
 
   if (!dir.exists(out_dir)) dir.create(out_dir)
   lst <- lapply(hw_files, function(file_i) {
-    render_hw(file_i, key, out_dir)
+    check_hw(file_i, key, out_dir)
   })
   student_names <- sapply(strsplit(tools::file_path_sans_ext(basename(hw_files)), "_"),
                           `[`, 1)
