@@ -13,7 +13,7 @@ gradescope_list <- function(df, ...) {
   rownames(df) <- NULL
   lst <- list(
     visibility = "visible",
-    stdout_visibility = "visible",
+    stdout_visibility = "hidden",
     ...,
     tests = df
   )
