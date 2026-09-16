@@ -54,6 +54,7 @@ item <- function(compare_fun = grade_equal, pts = 1, name = NULL) {
 \item \href{#method-Keymaker-add}{\code{Keymaker$add()}}
 \item \href{#method-Keymaker-save}{\code{Keymaker$save()}}
 \item \href{#method-Keymaker-key}{\code{Keymaker$key()}}
+\item \href{#method-Keymaker-packages}{\code{Keymaker$packages()}}
 \item \href{#method-Keymaker-clone}{\code{Keymaker$clone()}}
 }
 }
@@ -98,6 +99,15 @@ item <- function(compare_fun = grade_equal, pts = 1, name = NULL) {
 \subsection{Method \code{key()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Keymaker$key(clean_names = TRUE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Keymaker-packages"></a>}}
+\if{latex}{\out{\hypertarget{method-Keymaker-packages}{}}}
+\subsection{Method \code{packages()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Keymaker$packages(pkg = NULL, version = NULL)}\if{html}{\out{</div>}}
 }
 
 }
