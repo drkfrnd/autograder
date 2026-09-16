@@ -23,6 +23,7 @@
   }
 }
 
+
 eval_simple_formula <- function(formula, envir = parent.frame()) {
   if (length(formula) == 3) {
     stop("This function only works with formulas that only have a right side.")
@@ -31,8 +32,9 @@ eval_simple_formula <- function(formula, envir = parent.frame()) {
   eval(rhs, envir = envir)
 }
 
+#' @param seed random seed to set before running each function
 #' @export
-grade_function <- function(hw, key, object_names, args = list()) {
+grade_function <- function(hw, key, object_names, args = list(), seed = NULL) {
   # args <- as.list(...)
   if (length(object_names) > 1) {
     stop("Only one function can be graded at a time.")
@@ -45,8 +47,15 @@ grade_function <- function(hw, key, object_names, args = list()) {
       args_i[is_formula] <- lapply(args_i[is_formula], eval_simple_formula, envir = key)
     }
     fx_str <- paste0(object_names, "(", paste0(args_i, collapse = ", "), ")")
+    if (!is.null(seed)) set.seed(seed)
+    # environment(hw[[object_names]]) <- list2env(as.list(hw), parent = environment(hw[[object_names]]))
     hw_result <- do.call(hw[[object_names]], args_i)
+    # hw_result <- do.call(hw[[object_names]], args_i, envir = hw)
+    if (!is.null(seed)) set.seed(seed)
+    # environment(key[[object_names]]) <- list2env(as.list(key), parent = environment(key[[object_names]]))
+    # environment(key[[object_names]]) <- list2env(as.list(key), parent = environment(key[[object_names]]))
     key_result <- do.call(key[[object_names]], args_i)
+    # key_result <- do.call(key[[object_names]], args_i, envir = key)
     # testthat::expect_equal(,
     .expect_equal2(
       hw_result,
@@ -144,7 +153,7 @@ grade_exists <- function(hw, key, object_names) {
 #' @param key list containing the relevant objects
 #' @export
 grade_equal <- function(hw, key, object_names) {
-  print("testing")
+  # print("testing")
   autograder::grade_exists(hw, key, object_names)
 
   lapply(object_names, function(nm_i) {
