@@ -59,6 +59,76 @@ grade_function <- function(hw, key, object_names, args = list()) {
 }
 
 #' @export
+#' @param id_col character vector of column(s) to use for the ID. If provided,
+#'   both the homework and the key data frame are sorted on the provided
+#'   column(s) before comparing them. This is useful for ignoring row order when
+#'   comparing data frames
+grade_df <- function(hw, key, object_names, id_col = NULL, ignore_rownames = FALSE, ignore_colorder = FALSE) {
+  autograder::grade_exists(hw, key, object_names)
+
+  lapply(object_names, function(nm_i) {
+    hw_df <- hw[[nm_i]]
+    key_df <- key[[nm_i]]
+
+    if (!is.data.frame(hw_df)) {
+      stop(paste0(nm_i, " is not a data frame."), call. = FALSE)
+    }
+    if (any(sort(names(hw_df)) != sort(names(key_df)))) {
+
+      missing_cols <- setdiff(names(key_df), names(hw_df))
+      extra_cols <- setdiff(names(hw_df), names(key_df))
+
+      missing_str <- NULL
+      if (length(missing_cols) > 0) {
+        missing_str <- paste0("\n", nm_i, " is missing the following columns:\n",
+                              paste0(missing_cols, collapse = "; "), "\n")
+      }
+      extra_str <- NULL
+      if (length(extra_cols) > 0) {
+        extra_str <- paste0("\n", nm_i, " has the following extra columns:\n",
+                              paste0(extra_cols, collapse = "; "), "\n")
+      }
+      stop(paste0(
+        nm_i, " does not have the correct columns. The expected columns are:\n",
+        paste0(names(key_df), collapse = "; "), "\n",
+        missing_str,
+        extra_str
+      ), call. = FALSE)
+    }
+
+    if (ignore_colorder) {
+      hw_df <- hw_df[, names(key_df), drop = FALSE]
+    }
+
+    if (!is.null(id_col)) {
+      hw_df <- hw_df[do.call(order, unname(hw_df[, id_col, drop = FALSE])), ]
+      key_df <- key_df[do.call(order, unname(key_df[, id_col, drop = FALSE])), ]
+    }
+
+    if (ignore_rownames) {
+      rownames(hw_df) <- NULL
+      rownames(key_df) <- NULL
+    }
+    .expect_equal2(
+      hw_df,
+      key_df,
+      label = nm_i,
+      expected.label = paste0(nm_i, " (key)")
+    )
+
+    # test <- try(testthat::expect_equal(hw[[nm_i]], key[[nm_i]], label = nm_i, expected.label = paste0(nm_i, " (key)")))
+    # if (inherits(test, "try-error")) {
+    #   error_message <- gsub("Error : ", "", as.character(test), fixed = TRUE)
+    #   stop(paste0(
+    #     error_message,
+    #     .print_mismatch(hw[[nm_i]], key[[nm_i]])
+    #   ), call. = FALSE)
+    # }
+  })
+  invisible(NULL)
+}
+
+#' @export
 grade_exists <- function(hw, key, object_names) {
   # browser()
   is_in_hw <- object_names %in% names(hw)
