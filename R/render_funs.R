@@ -100,12 +100,8 @@ render_all <- function(in_dir, out_dir, key = NULL, summary_csv = TRUE,
   invisible(list(results = lst, summary = df))
 }
 
-#' @title Render a script without the code
-#' @description Renders a script while ignoring the code
-#' @param path character of length 1; path to the R or Rmd file
-#' @param output_file character of length 1; path to the output file
-#' @export
-render_no_code <- function(path, output_format = "all", ...) {
+# function for rending an Rmd file while ignoring the code chunks
+.render_rmd_no_code <- function(path, output_format = "pdf", ...) {
   on.exit({
     knitr::opts_hooks$set(eval = function(options) { options })
   })
@@ -116,4 +112,29 @@ render_no_code <- function(path, output_format = "all", ...) {
   })
 
   rmarkdown::render(path, output_format = output_format, ...)
+}
+
+# function for rendering a qmd file while ignoring the code chunks
+.render_qmd_no_code <- function(path, output_format = "pdf", ...) {
+  quarto::quarto_render(
+    input = path,
+    output_format = output_format,
+    metadata = list(execute = list(eval = FALSE, include = FALSE)),
+    ...
+  )
+}
+
+
+#' @title Render a script without the code
+#' @description Renders a script while ignoring the code
+#' @param path character of length 1; path to the R or Rmd file
+#' @param output_file character of length 1; path to the output file
+#' @export
+render_no_code <- function(path, ...) {
+  stopifnot(length(path) == 1)
+  if (grepl("[.]qmd$", tolower(path))) {
+    .render_qmd_no_code(path, ...)
+  } else {
+    .render_rmd_no_code(path, ...)
+  }
 }
