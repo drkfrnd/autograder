@@ -4,7 +4,7 @@
 \alias{render_no_code}
 \title{Render a script without the code}
 \usage{
-render_no_code(path, output_format = "all", ...)
+render_no_code(path, ...)
 }
 \arguments{
 \item{path}{character of length 1; path to the R or Rmd file}
