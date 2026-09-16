@@ -78,7 +78,8 @@
     )
   } else {
     source_error <- NA
-    hw_objects <- as.list(hw_env)
+    # hw_objects <- as.list(hw_env)
+    hw_objects <- hw_env
     df <- .check_items(
       key_items = key_items,
       key_objects = key_objects,
