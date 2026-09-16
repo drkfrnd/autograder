@@ -68,7 +68,7 @@ get_key <- function(name) {
     name
   )
   tf <- tempfile(fileext = ".rds")
-  result <- try(download.file(url, tf), silent = TRUE)
+  result <- try(download.file(url, tf, cacheOK = FALSE), silent = TRUE)
   if (inherits(result, "try-error")) {
     stop(paste0("Download was unsuccessful. Did you enter the correct name?\n",
                 "URL: ", url))
