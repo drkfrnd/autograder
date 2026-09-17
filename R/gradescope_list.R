@@ -1,6 +1,6 @@
 # @param df output of check_hw()
 #' @export
-gradescope_list <- function(df, ...) {
+gradescope_list <- function(df, visibility = "visible", stdout_visibility = "visible", ...) {
   df$result <- c(correct = "passed", incorrect = "failed")[df$result]
   names_dict <- c(
     pts = "score",
@@ -12,8 +12,8 @@ gradescope_list <- function(df, ...) {
   names(df)[match(names(names_dict), names(df))] <- names_dict
   rownames(df) <- NULL
   lst <- list(
-    visibility = "visible",
-    stdout_visibility = "hidden",
+    visibility = visibility,
+    stdout_visibility = stdout_visibility,
     ...,
     tests = df
   )
