@@ -30,7 +30,7 @@
 #' @export
 .run_render <- function(path, env, out_dir, ...) {
   try({
-    rmarkdown::render(path, envir = env, output_dir = out_dir)
+    rmarkdown::render(path, envir = env, output_dir = out_dir, ...)
     # output_format = rmarkdown::html_document(
     #   pandoc_args = c("--metadata=author:")
     # ))
@@ -112,7 +112,7 @@
 #' @returns invisibly returns the returned value from `.check_answers`
 #' @inheritParams render_all
 #' @export
-check_hw <- function(path = NULL, key = NULL, verbose = TRUE, out_dir = NULL) {
+check_hw <- function(path = NULL, key = NULL, verbose = TRUE, out_dir = NULL, ...) {
   if (!is.null(path)) {
     if (!file.exists(path)) {
       stop(paste0("File \"", path, "\" not found in the current working directory (", getwd(), ").\n",
@@ -131,7 +131,8 @@ check_hw <- function(path = NULL, key = NULL, verbose = TRUE, out_dir = NULL) {
                                  key_items = key$items,
                                  key_objects = key$objects,
                                  source_fun = run_fun,
-                                 out_dir = out_dir),
+                                 out_dir = out_dir,
+                                 ...),
                      package = "autograder")
 
   if (verbose) {
