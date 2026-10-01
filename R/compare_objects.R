@@ -68,6 +68,11 @@ grade_function <- function(hw, key, object_names, args = list(), seed = NULL) {
 }
 
 #' @export
+grade_blank <- function(hw, key, object_names) {
+  invisible(NULL)
+}
+
+#' @export
 #' @param id_col character vector of column(s) to use for the ID. If provided,
 #'   both the homework and the key data frame are sorted on the provided
 #'   column(s) before comparing them. This is useful for ignoring row order when
