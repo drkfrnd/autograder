@@ -137,47 +137,88 @@ Keymaker <- R6::R6Class(
     initialize = function() {
       private$.key$objects <- new.env(parent = emptyenv())
     },
-    add = function(..., compare_fun = grade_equal, compare_fun_args = list(), name = NULL, object_names = NULL, pts = 1, level = 1) {
-
-      compare_fun <- removeSource(compare_fun)
-      if (is.null(name) && ...length() == 0) {
-        stop("There must be a least argument provided to ... or name")
+    # add = function(..., compare_fun = grade_equal, compare_fun_args = list(), name = NULL, object_names = NULL, pts = 1, level = 1) {
+    #
+    #   compare_fun <- removeSource(compare_fun)
+    #   if (is.null(name) && ...length() == 0) {
+    #     stop("There must be a least argument provided to ... or name")
+    #   }
+    #   item_id <- private$.get_new_level(level)
+    #   if (is.null(name)) {
+    #     name <- item_id
+    #   }
+    #   # if (name %in% names(private$.key)) private$.key[[name]] <- NULL
+    #   # private$.key <- c(private$.key, setNames(list(item(...)), name))
+    #
+    #   # if (name %in% names(private$.objects)) private$.objects[[name]] <- NULL
+    #   # browser()
+    #   new_objects <- list2(...)
+    #   # is_fun <- sapply(new_objects, is.function)
+    #   # if (any(is_fun)) {
+    #   #   new_objects[is_fun] <- lapply(new_objects[is_fun], private$.obfuscate_function)
+    #   # }
+    #   # private$.key$objects[names(new_objects)] <- new_objects
+    #   for (nm_i in names(new_objects)) {
+    #     obj_i <- new_objects[[nm_i]]
+    #     if (is.function(obj_i)) {
+    #       # environment(obj_i) <- list2env(as.list(environment(obj_i)))
+    #       # environment(obj_i) <- private$.key$objects
+    #       obj_i <- private$.obfuscate_function(obj_i)
+    #     }
+    #     # assign(nm_i, new_objects[[nm_i]], envir = private$.key$objects)
+    #     assign(nm_i, obj_i, envir = private$.key$objects)
+    #   }
+    #   # private$.key$objects <- c(private$.object, list2(...))
+    #   private$.key$items[[item_id]] <- list(
+    #     compare_fun = compare_fun,
+    #     compare_fun_args = compare_fun_args,
+    #     pts = pts,
+    #     id = item_id,
+    #     name = name,
+    #     object_names = object_names %||% names(new_objects)
+    #   )
+    #   invisible(NULL)
+    # },
+    add_objects = function(...) {
+      if (...length() == 0) {
+        stop("There must be a least argument provided to ...")
       }
+      new_objects <- list2(...)
+      for (nm_i in names(new_objects)) {
+        obj_i <- new_objects[[nm_i]]
+        if (is.function(obj_i)) {
+          obj_i <- private$.obfuscate_function(obj_i)
+        }
+        assign(nm_i, obj_i, envir = private$.key$objects)
+      }
+      return(names(new_objects))
+    },
+    add_item = function(compare_fun = grade_equal, compare_fun_args = list(), name = NULL, object_names = NULL, pts = 1, level = 1){
+      compare_fun <- removeSource(compare_fun)
       item_id <- private$.get_new_level(level)
       if (is.null(name)) {
         name <- item_id
       }
-      # if (name %in% names(private$.key)) private$.key[[name]] <- NULL
-      # private$.key <- c(private$.key, setNames(list(item(...)), name))
-
-      # if (name %in% names(private$.objects)) private$.objects[[name]] <- NULL
-      # browser()
-      new_objects <- list2(...)
-      # is_fun <- sapply(new_objects, is.function)
-      # if (any(is_fun)) {
-      #   new_objects[is_fun] <- lapply(new_objects[is_fun], private$.obfuscate_function)
-      # }
-      # private$.key$objects[names(new_objects)] <- new_objects
-      for (nm_i in names(new_objects)) {
-        obj_i <- new_objects[[nm_i]]
-        if (is.function(obj_i)) {
-          # environment(obj_i) <- list2env(as.list(environment(obj_i)))
-          # environment(obj_i) <- private$.key$objects
-          obj_i <- private$.obfuscate_function(obj_i)
-        }
-        # assign(nm_i, new_objects[[nm_i]], envir = private$.key$objects)
-        assign(nm_i, obj_i, envir = private$.key$objects)
-      }
-      # private$.key$objects <- c(private$.object, list2(...))
       private$.key$items[[item_id]] <- list(
         compare_fun = compare_fun,
         compare_fun_args = compare_fun_args,
         pts = pts,
         id = item_id,
         name = name,
-        object_names = object_names %||% names(new_objects)
+        object_names = object_names
       )
       invisible(NULL)
+    },
+    add = function(..., compare_fun = grade_equal, compare_fun_args = list(), name = NULL, object_names = NULL, pts = 1, level = 1) {
+      added_object_names <- self$add_objects(...)
+      self$add_item(
+        compare_fun = compare_fun,
+        compare_fun_args = compare_fun_args,
+        name = name,
+        object_names = object_names %||% added_object_names,
+        pts = pts,
+        level = level
+      )
     },
     # a = function(...) {
     #   self$add(...)
