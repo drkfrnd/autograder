@@ -4,7 +4,7 @@
 \alias{.run_source}
 \title{Run a script and store the created objects}
 \usage{
-.run_source(path, env, ...)
+.run_source(path, env, opts = list(), ...)
 }
 \arguments{
 \item{path}{character of length 1; path to the R script (or .Rmd)}

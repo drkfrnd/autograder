@@ -8,7 +8,9 @@
 #' @returns If `source()` runs successfully, returns the output of `source()`.
 #'   Otherwise returns a `try-error`.
 #' @export
-.run_source <- function(path, env, ...) {
+.run_source <- function(path, env, opts = list(), ...) {
+  old_opts <- options(opts)
+  on.exit(options(old_opts))
   print(tools::file_ext(path))
   if (tools::file_ext(path) == "Rmd") {
     tf <- tempfile(fileext = ".R")
@@ -28,7 +30,9 @@
 #'   the rendered file.
 #' @param ... ignored
 #' @export
-.run_render <- function(path, env, out_dir, ...) {
+.run_render <- function(path, env, out_dir, opts = list(), ...) {
+  old_opts <- options(opts)
+  on.exit(options(old_opts))
   try({
     rmarkdown::render(path, envir = env, output_dir = out_dir, ...)
     # output_format = rmarkdown::html_document(

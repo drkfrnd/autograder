@@ -4,7 +4,7 @@
 \alias{.run_render}
 \title{Renders an R or Rmarkdown file}
 \usage{
-.run_render(path, env, out_dir, ...)
+.run_render(path, env, out_dir, opts = list(), ...)
 }
 \arguments{
 \item{path}{character of length 1; path to the file to render}

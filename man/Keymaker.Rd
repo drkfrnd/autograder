@@ -31,48 +31,67 @@ item <- function(compare_fun = grade_equal, pts = 1, name = NULL) {
     class="grade_item"
   )
 }
-
-#' @title Create a grading item
-#' @description Creates an grading item. The item stores any data passed to
-#' @export
-item <- function(compare_fun = grade_equal, pts = 1, name = NULL) {
-  structure(
-    list(
-      # objects = list2(...),
-      name = name,
-      compare_fun = compare_fun,
-      pts = pts
-    ),
-    class="grade_item"
-  )
-}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-Keymaker-new}{\code{Keymaker$new()}}
-\item \href{#method-Keymaker-add}{\code{Keymaker$add()}}
-\item \href{#method-Keymaker-save}{\code{Keymaker$save()}}
-\item \href{#method-Keymaker-key}{\code{Keymaker$key()}}
-\item \href{#method-Keymaker-packages}{\code{Keymaker$packages()}}
-\item \href{#method-Keymaker-clone}{\code{Keymaker$clone()}}
-}
+  \itemize{
+    \item \href{#method-Keymaker-initialize}{\code{Keymaker$new()}}
+    \item \href{#method-Keymaker-add_objects}{\code{Keymaker$add_objects()}}
+    \item \href{#method-Keymaker-add_item}{\code{Keymaker$add_item()}}
+    \item \href{#method-Keymaker-add}{\code{Keymaker$add()}}
+    \item \href{#method-Keymaker-save}{\code{Keymaker$save()}}
+    \item \href{#method-Keymaker-key}{\code{Keymaker$key()}}
+    \item \href{#method-Keymaker-packages}{\code{Keymaker$packages()}}
+    \item \href{#method-Keymaker-clone}{\code{Keymaker$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Keymaker-new"></a>}}
-\if{latex}{\out{\hypertarget{method-Keymaker-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Keymaker$new()}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-Keymaker-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-Keymaker-initialize}{}}}
+\subsection{\code{Keymaker$new()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Keymaker$new()}
+    \if{html}{\out{</div>}}
+  }
 }
 
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Keymaker-add_objects"></a>}}
+\if{latex}{\out{\hypertarget{method-Keymaker-add_objects}{}}}
+\subsection{\code{Keymaker$add_objects()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Keymaker$add_objects(...)}
+    \if{html}{\out{</div>}}
+  }
 }
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Keymaker-add_item"></a>}}
+\if{latex}{\out{\hypertarget{method-Keymaker-add_item}{}}}
+\subsection{\code{Keymaker$add_item()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Keymaker$add_item(
+  compare_fun = grade_equal,
+  compare_fun_args = list(),
+  name = NULL,
+  object_names = NULL,
+  pts = 1,
+  level = 1
+)}
+    \if{html}{\out{</div>}}
+  }
+}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Keymaker-add"></a>}}
 \if{latex}{\out{\hypertarget{method-Keymaker-add}{}}}
-\subsection{Method \code{add()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Keymaker$add(
+\subsection{\code{Keymaker$add()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Keymaker$add(
   ...,
   compare_fun = grade_equal,
   compare_fun_args = list(),
@@ -80,52 +99,61 @@ item <- function(compare_fun = grade_equal, pts = 1, name = NULL) {
   object_names = NULL,
   pts = 1,
   level = 1
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Keymaker-save"></a>}}
 \if{latex}{\out{\hypertarget{method-Keymaker-save}{}}}
-\subsection{Method \code{save()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Keymaker$save(path, ...)}\if{html}{\out{</div>}}
+\subsection{\code{Keymaker$save()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Keymaker$save(path, ...)}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Keymaker-key"></a>}}
 \if{latex}{\out{\hypertarget{method-Keymaker-key}{}}}
-\subsection{Method \code{key()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Keymaker$key(clean_names = TRUE)}\if{html}{\out{</div>}}
+\subsection{\code{Keymaker$key()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Keymaker$key(clean_names = TRUE)}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Keymaker-packages"></a>}}
 \if{latex}{\out{\hypertarget{method-Keymaker-packages}{}}}
-\subsection{Method \code{packages()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Keymaker$packages(pkg = NULL, version = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{Keymaker$packages()}}{
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Keymaker$packages(pkg = NULL, version = NULL)}
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Keymaker-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-Keymaker-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Keymaker$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{Keymaker$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Keymaker$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }
