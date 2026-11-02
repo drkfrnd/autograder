@@ -10,7 +10,7 @@
 #'   results summary into.
 .insert_results_into_html <- function(result, path) {
   message <- .print_source_and_check(result)
-  html_doc <- rvest::read_html(path)
+  html_doc <- rvest::read_html(path, options = c("RECOVER", "NOERROR", "NOBLANKS", "HUGE"))
   html_doc |>
     xml2::xml_find_first('//div[@id="header"]') |>
     xml2::xml_add_sibling(.value = "pre") |>
