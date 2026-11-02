@@ -16,7 +16,7 @@
     xml2::xml_add_sibling(.value = "pre") |>
     xml2::xml_find_first("//pre") |>
     xml2::xml_add_child("code", message)
-  xml2::write_xml(html_doc, path)
+  xml2::write_xml(html_doc, path, options = "as_html")
 }
 
 # @title Render homework to an HTML file
