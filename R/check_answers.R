@@ -66,6 +66,11 @@
     source_error <- NULL
   } else {
     hw_env <- new.env()
+    # when students use the 'View()' function in their code, it breaks the
+    # autograder because it runs in noninteractive mode on the server and no
+    # viewer is available. We can avoid this by overriding the 'View()' function
+    # in the environment the script runs in.
+    hw_env$View <- function(x, ...){ head(x, 10) }
     source_error <- source_fun(path, hw_env, ...)
   }
   if (inherits(source_error, "try-error")) {
